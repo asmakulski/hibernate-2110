@@ -3,6 +3,7 @@ package com.infoshareacademy.web;
 import com.infoshareacademy.dao.StudentDao;
 import com.infoshareacademy.model.Student;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 import javax.inject.Inject;
@@ -29,8 +30,8 @@ public class StudentServlet extends HttpServlet {
 
         // Test data
         // Students
-        studentDao.save(new Student("Michal"));
-        studentDao.save(new Student("Marek"));
+        studentDao.save(new Student("Michal", "Kowalslki", LocalDate.of(1990, 9, 9)));
+        studentDao.save(new Student("Marek", "Wach", LocalDate.of(1977, 04, 21)));
 
         LOG.info("System time zone is: {}", ZoneId.systemDefault());
     }
@@ -60,7 +61,7 @@ public class StudentServlet extends HttpServlet {
     }
 
     private void updateStudent(HttpServletRequest req, HttpServletResponse resp)
-        throws IOException {
+            throws IOException {
         final Long id = Long.parseLong(req.getParameter("id"));
         LOG.info("Updating Student with id = {}", id);
 
@@ -69,6 +70,11 @@ public class StudentServlet extends HttpServlet {
             LOG.info("No Student found for id = {}, nothing to be updated", id);
         } else {
             existingStudent.setName(req.getParameter("name"));
+            existingStudent.setSurname(req.getParameter("surname"));
+
+            // YYYY-MM-DD
+            LocalDate dateOfBirth = LocalDate.parse(req.getParameter("dateOfBirth"));
+            existingStudent.setDateOfBirth(dateOfBirth);
 
             studentDao.update(existingStudent);
             LOG.info("Student object updated: {}", existingStudent);
@@ -83,6 +89,9 @@ public class StudentServlet extends HttpServlet {
 
         final Student p = new Student();
         p.setName(req.getParameter("name"));
+        p.setSurname(req.getParameter("surname"));
+        LocalDate dateOfBirth = LocalDate.parse(req.getParameter("dateOfBirth"));
+        p.setDateOfBirth(dateOfBirth);
 
         studentDao.save(p);
         LOG.info("Saved a new Student object: {}", p);
